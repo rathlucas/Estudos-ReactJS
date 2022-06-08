@@ -1,0 +1,13 @@
+{
+  "satellites": [
+    {
+      "name": "Moon A"
+    },
+    {
+      "name": "Moon B"
+    },
+    {
+      "name": "Moon C"
+    }
+  ]
+}
