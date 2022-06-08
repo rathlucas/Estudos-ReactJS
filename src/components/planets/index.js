@@ -1,6 +1,7 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import Planet from './planet';
+import Form from './form';
 
 async function getPlanets() {
   const response = await fetch('http://localhost:3000/api/planets.json');
@@ -9,50 +10,38 @@ async function getPlanets() {
   return data;
 }
 
-class Planets extends Component {
-  constructor(props) {
-    super(props);
+function Planets() {
+  const [planets, setPlanets] = useState([]);
 
-    this.state = {
-      planets: [],
-    };
-  }
-
-  componentDidMount() {
+  useEffect(() => {
     getPlanets().then((data) => {
-      this.setState((state) => ({
-        planets: data['planets'],
-      }));
+      setPlanets(data['planets']);
     });
-  }
+  }, []);
 
-  removeLastPlanet = () => {
-    const newPlanets = [...this.state.planets];
-
-    newPlanets.pop();
-    this.setState(() => ({
-      planets: newPlanets,
-    }));
+  const addPlanet = (new_planet) => {
+    setPlanets([...planets, new_planet]);
   };
 
-  render() {
-    return (
-      <>
-        <h3>Planet List</h3>
-        <button onClick={this.removeLastPlanet}>Remove the last planet</button>
-        {this.state.planets.map((planet) => {
-          return (
-            <Planet
-              name={planet.name}
-              description={planet.description}
-              link_url={planet.link_url}
-              img_url={planet.img_url}
-            />
-          );
-        })}
-      </>
-    );
-  }
+  return (
+    <>
+      <h3>Planet List</h3>
+
+      <Form addPlanet={addPlanet} />
+      {planets.map((planet, index) => {
+        return (
+          <Planet
+            id={planet.id}
+            key={index}
+            name={planet.name}
+            description={planet.description}
+            img_url={planet.img_url}
+            link_url={planet.link_url}
+          />
+        );
+      })}
+    </>
+  );
 }
 
 export default Planets;
