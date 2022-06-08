@@ -1,38 +1,37 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 import DescriptionWithLink from '../../shared/description_with_link';
 import GrayImg from '../../shared/gray_img';
 
-const Planet = (props) => {
-  let planetName;
+async function getSatellites(id) {
+  const response = await fetch(`http://localhost:3000/api/${id}.json`);
+  const data = await response.json();
 
-  const satellitesNames = ['a', 'b', 'c'];
-  const satellitesContent = satellitesNames.map((name) => {
-    return <li>{name}</li>;
+  return data;
+}
+
+function Planet({ id, name, description, img_url, link_url, onClick }) {
+  const [satellites, setSatellites] = useState([]);
+
+  useEffect(() => {
+    getSatellites(id).then((data) => {
+      setSatellites(data['satellites']);
+    });
   });
 
-  if (props.underline) {
-    planetName = (
-      <h4>
-        <u>{props.name}</u>
-      </h4>
-    );
-  } else {
-    planetName = <h4>{props.name}</h4>;
-  }
-
   return (
-    <div onClick={() => props.onClick(props.name)}>
-      {planetName}
-      <GrayImg img_url={props.img_url} />
-      <DescriptionWithLink
-        description={props.description}
-        link_url={props.link_url}
-      />
+    <div>
+      <h4>{name}</h4>
+      <GrayImg img_url={img_url} />
+      <DescriptionWithLink description={description} link_url={link_url} />
       <h4>Satélites</h4>
-      <ul>{satellitesContent}</ul>
+      <ul>
+        {satellites.map((satellite, index) => {
+          return <li key={index}>{satellite.name}</li>;
+        })}
+      </ul>
     </div>
   );
-};
+}
 
 export default Planet;
